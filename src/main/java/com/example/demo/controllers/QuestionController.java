@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.adapter.QuestionAdapter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,12 +37,20 @@ public class QuestionController {
     
     @GetMapping("/{id}")
     public Mono<QuestionResponseDTO> getQuestionById(@PathVariable String id) {
-        throw new UnsupportedOperationException("Not implemented");
+        return questionService.getQuestionById(id)
+                .doOnSuccess(response-> System.out.println("Question is " + response))
+                .doOnError(error->System.out.println("No question found "+error))
+                .switchIfEmpty(Mono.error(new RuntimeException("Question not found with id: " + id)));
     }
 
     @GetMapping()
-    public Flux<QuestionResponseDTO> getAllQuestions() {
-        throw new UnsupportedOperationException("Not implemented");
+    public Flux<QuestionResponseDTO> getAllQuestions(
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue ="10") int size
+
+    ) {
+        return questionService.getAllQuestion(cursor, size);
+        //throw new UnsupportedOperationException("Not implemented");
     }
 
     @DeleteMapping("/{id}")
@@ -55,7 +64,9 @@ public class QuestionController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
-        throw new UnsupportedOperationException("Not implemented");
+
+        return questionService.searchQuestions(query,page,size);
+
     }
     
     @GetMapping("/tag/{tag}")
