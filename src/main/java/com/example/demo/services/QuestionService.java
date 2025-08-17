@@ -2,6 +2,8 @@ package com.example.demo.services;
 
 import java.time.LocalDateTime;
 
+import com.example.demo.events.ViewCountEvent;
+import com.example.demo.producers.KafkaEventProducer;
 import com.example.demo.utils.CursorUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +24,10 @@ import reactor.core.publisher.Mono;
 public class QuestionService implements IQuestionService {
 
     private final QuestionRepository questionRepository;
-    
+
+    private final KafkaEventProducer kafkaEventProducer;
+
+
     @Override
     public Mono<QuestionResponseDTO> createQuestion(QuestionRequestDTO questionRequestDTO) {
 
@@ -43,7 +48,13 @@ public class QuestionService implements IQuestionService {
     public Mono<QuestionResponseDTO> getQuestionById(String id) {
         return questionRepository.findById(id)
                 .map(QuestionAdapter::toQuestionResponseDTO)
-                .doOnSuccess(response-> System.out.println("Question is " + response))
+                .doOnSuccess(response->{
+                    System.out.println("Question is " + response);
+                            ViewCountEvent viewCountEvent= new ViewCountEvent(id,"question",LocalDateTime.now());
+                            kafkaEventProducer.publishViewCountEvent(viewCountEvent);
+
+                }
+                )
                 .doOnError(error->System.out.println("No question found "+error))
                 .switchIfEmpty(Mono.error(new RuntimeException("Question not found with id: " + id)));
     }

@@ -16,4 +16,6 @@ public interface IQuestionService {
     public Flux<QuestionResponseDTO> searchQuestions(String searchTerm, int page, int size);
 
     public Flux<QuestionResponseDTO> getAllQuestion(String cursor, int size);
+
+    
 }
