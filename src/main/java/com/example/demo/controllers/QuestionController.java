@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.adapter.QuestionAdapter;
+import com.example.demo.models.QuestionElasticDocument;
 import com.example.demo.producers.KafkaEventProducer;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -77,6 +79,11 @@ public class QuestionController {
         @RequestParam(defaultValue = "10") int size
     ) {
         throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @GetMapping("/elasticsearch")
+    public List<QuestionElasticDocument> searchQuestionsByElasticsearch(@RequestParam String query) {
+        return questionService.searchQuestionsByElasticsearch(query);
     }
 
     

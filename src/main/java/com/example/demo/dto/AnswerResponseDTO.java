@@ -25,6 +25,8 @@ public class AnswerResponseDTO {
     @Size(min = 10,max=1000, message = "Content must be between 10 and 1000 characters")
     private String content;
 
+    private String questionId;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
